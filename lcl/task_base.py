@@ -1,5 +1,7 @@
 from typing import Callable, Optional, Any
 from datetime import datetime, timedelta, timezone
+from time import sleep
+from threading import Thread
 
 from celery import Celery, Task
 from celery.signals import after_task_publish
@@ -10,11 +12,16 @@ from celery.app.task import ExceptionInfo
 START_WORKER_FUNC_TYPE = Callable[[], None]
 
 
+def _inner_shutdown(app, hostname):
+    # sleep(1)
+    app.control.shutdown(destination=[hostname])
+
+
 class OneTaskExecuterTaskBase(Task):
     START_WORKER_FUNC: Optional[START_WORKER_FUNC_TYPE] = None
 
     RECREATE_WORKER_ON_RETRY = False
-    RECREATE_WORKER_MINIMAL_COUNTDOWN = timedelta(seconds=60)
+    RECREATE_WORKER_MINIMAL_COUNTDOWN: Optional[timedelta] = timedelta(seconds=60)
     START_WORKER_TASK: Optional[Task] = None
 
     TASK_QUEUE: Optional[str] = None
@@ -48,10 +55,10 @@ class OneTaskExecuterTaskBase(Task):
         after_task_publish.connect(cls._start_new_worker, sender=cls.name)
 
     def apply_async(self, *args, **kwargs):
-        return super().apply_async(*args, **{**kwargs, "queue": "one_task"})
+        return super().apply_async(*args, **{**kwargs, "queue": self.TASK_QUEUE})
 
     def _shutdown(self, hostname: str):
-        self.app.control.shutdown(destination=[hostname])
+        Thread(target=_inner_shutdown, args=(self.app, hostname)).start()
 
     @classmethod
     def _start_new_worker(cls, *args, **kwargs):
@@ -68,6 +75,11 @@ class OneTaskExecuterTaskBase(Task):
 
     def on_retry(self, exc: Exception, task_id: str, args, kwargs, einfo: ExceptionInfo) -> None:
         if not self.RECREATE_WORKER_ON_RETRY:
+            return
+
+        if self.RECREATE_WORKER_MINIMAL_COUNTDOWN is None:
+            self.start_worker()
+            self._shutdown(self.request)
             return
 
         assert isinstance(einfo.exception, Retry)
