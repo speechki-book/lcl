@@ -1,19 +1,18 @@
-from typing import Callable, Optional, Any
 from datetime import datetime, timedelta, timezone
-from time import sleep
+from numbers import Real
 from threading import Thread
+from typing import Union, Callable, Optional, Any
 
 from celery import Celery, Task
-from celery.signals import after_task_publish
-from celery.exceptions import Retry
 from celery.app.task import ExceptionInfo
+from celery.exceptions import Retry
+from celery.signals import after_task_publish
 
 
 START_WORKER_FUNC_TYPE = Callable[[], None]
 
 
 def _inner_shutdown(app, hostname):
-    # sleep(1)
     app.control.shutdown(destination=[hostname])
 
 
@@ -44,9 +43,7 @@ class OneTaskExecuterTaskBase(Task):
 
     @classmethod
     def get_task_queue(cls) -> str:
-        assert cls.TASK_QUEUE is not None, (
-            "'%s' should either include a `TASK_QUEUE` attribute, " % cls.__name__
-        )
+        assert cls.TASK_QUEUE is not None, "'%s' should either include a `TASK_QUEUE` attribute, " % cls.__name__
 
         return cls.TASK_QUEUE
 
@@ -85,7 +82,7 @@ class OneTaskExecuterTaskBase(Task):
         assert isinstance(einfo.exception, Retry)
         retry: Retry = einfo.exception
 
-        when: Union[numbers.Real, datetime] = retry.when  # type: ignore
+        when: Union[Real, datetime] = retry.when  # type: ignore
 
         if isinstance(when, datetime):
             time_delta: int = (when - datetime.now(timezone.utc)).seconds
