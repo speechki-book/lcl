@@ -3,7 +3,6 @@ from typing import Optional
 
 from celery import Celery, bootsteps
 from celery.worker import WorkController
-from click import Option
 
 
 class TimeoutBootstep(bootsteps.StartStopStep):
@@ -16,14 +15,11 @@ class TimeoutBootstep(bootsteps.StartStopStep):
 
         self.t_ref = None
 
-        self.is_one_task_executer = is_one_task_executer
-
         self.last_processed_task_update_time: Optional[datetime] = None
         self.last_processed_task_count: Optional[int] = None
 
     def start(self, worker: WorkController):
-        if self.is_one_task_executer:
-            self.t_ref = worker.timer.call_repeatedly(30.0, self.check_timeout, (worker,), priority=10)
+        self.t_ref = worker.timer.call_repeatedly(30.0, self.check_timeout, (worker,), priority=10)
 
     def stop(self, worker: WorkController):
         if self.t_ref:
@@ -48,9 +44,5 @@ class TimeoutBootstep(bootsteps.StartStopStep):
             raise SystemExit()
 
 
-def setup(app: Celery):
-    app.user_options["worker"].add(
-        Option(("--is-one-task-executer",), is_flag=True, help="Worker use for execute one task")
-    )
-
+def setup_lcl(app: Celery):
     app.steps["worker"].add(TimeoutBootstep)
