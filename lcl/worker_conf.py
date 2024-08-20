@@ -22,9 +22,11 @@ class TimeoutBootstep(bootsteps.StartStopStep):
         self.t_ref = worker.timer.call_repeatedly(30.0, self.check_timeout, (worker,), priority=10)
 
     def stop(self, worker: WorkController):
-        if self.t_ref:
-            self.t_ref.cancel()
-            self.t_ref = None
+        pass
+
+        # if self.t_ref:
+        #     self.t_ref.cancel()
+        #     self.t_ref = None
 
     def check_timeout(self, worker: WorkController):
         print("Current active requests:", len(worker.state.active_requests))
