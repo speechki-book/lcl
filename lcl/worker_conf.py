@@ -27,6 +27,8 @@ class TimeoutBootstep(bootsteps.StartStopStep):
             self.t_ref = None
 
     def check_timeout(self, worker: WorkController):
+        print("Current active requests:", len(worker.state.active_requests))
+
         if len(worker.state.active_requests) != 0:
             return
 
