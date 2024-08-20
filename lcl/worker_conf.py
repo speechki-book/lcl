@@ -16,36 +16,28 @@ class TimeoutBootstep(bootsteps.StartStopStep):
         self.t_ref = None
 
         self.last_processed_task_update_time: Optional[datetime] = None
-        self.last_processed_task_count: Optional[int] = None
 
     def start(self, worker: WorkController):
         self.t_ref = worker.timer.call_repeatedly(30.0, self.check_timeout, (worker,), priority=10)
 
     def stop(self, worker: WorkController):
-        pass
-
-        # if self.t_ref:
-        #     self.t_ref.cancel()
-        #     self.t_ref = None
+        if self.t_ref:
+            self.t_ref.cancel()
+            self.t_ref = None
 
     def check_timeout(self, worker: WorkController):
-        print("Current active requests:", len(worker.state.active_requests))
-
         if len(worker.state.active_requests) != 0:
             return
 
         current_value = worker.state.all_total_count[0]
 
-        if self.last_processed_task_count != current_value:
-            self.last_processed_task_count = current_value
+        if self.last_processed_task_update_time is None:
             self.last_processed_task_update_time = datetime.now()
+
+        if current_value == 0 and (datetime.now() - self.last_processed_task_update_time) < self.TIMEOUT_SECONDS:
             return
 
-        assert self.last_processed_task_update_time is not None
-
-        delta_time = datetime.now() - self.last_processed_task_update_time
-        if delta_time.seconds >= self.TIMEOUT_SECONDS:
-            raise SystemExit()
+        worker.stop()
 
 
 def setup_lcl(app: Celery):
