@@ -34,7 +34,7 @@ class TimeoutBootstep(bootsteps.StartStopStep):
         if self.last_processed_task_update_time is None:
             self.last_processed_task_update_time = datetime.now()
 
-        if current_value == 0 and (datetime.now() - self.last_processed_task_update_time) < self.TIMEOUT_SECONDS:
+        if current_value == 0 and (datetime.now() - self.last_processed_task_update_time).seconds < self.TIMEOUT_SECONDS:
             return
 
         worker.stop()
