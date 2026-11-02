@@ -186,14 +186,14 @@ files = [
 
 [[package]]
 name = "filelock"
-version = "4.1.0"
+version = "4.2.6"
 description = "A platform independent file lock."
 optional = false
-python-versions = ">=3.10"
+python-versions = ">=3.11"
 groups = ["dev"]
 files = [
-    {file = "filelock-4.1.0-py3-none-any.whl", hash = "sha256:2ce9818e3e2d8f284c1a964414447ef148d42a5fd5e2a477a7118e574b293ec1"},
-    {file = "filelock-4.1.0.tar.gz", hash = "sha256:ad7f724afef953e731b1cc39bcd3a09166d72ed7fcdf29e6e88b1c3235c6715d"},
+    {file = "filelock-4.2.6-py3-none-any.whl", hash = "sha256:fd7d4fca497bf3e3d0945a13261f8e684f2aef12ce7cf76aef26e13bf7388b88"},
+    {file = "filelock-4.2.6.tar.gz", hash = "sha256:ee7af8ede36dcaf12e1016d9f7c3a63ecd5497d46f85dab21b8c779b8f944e97"},
 ]
 
 [[package]]
@@ -440,19 +440,6 @@ files = [
 ]
 
 [[package]]
-name = "typing-extensions"
-version = "4.16.0"
-description = "Backported and Experimental Type Hints for Python 3.9+"
-optional = false
-python-versions = ">=3.9"
-groups = ["dev"]
-markers = "python_version == \"3.10\""
-files = [
-    {file = "typing_extensions-4.16.0-py3-none-any.whl", hash = "sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"},
-    {file = "typing_extensions-4.16.0.tar.gz", hash = "sha256:dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5"},
-]
-
-[[package]]
 name = "vine"
 version = "5.0.0"
 description = "Promises, promises, promises."
@@ -482,7 +469,6 @@ filelock = {version = ">=3.24.2,<5", markers = "python_version >= \"3.10\""}
 packaging = ">=26.3"
 platformdirs = ">=4.4,<5"
 python-discovery = ">=1.6.1"
-typing-extensions = {version = ">=4.16", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "wcwidth"
@@ -498,5 +484,5 @@ files = [
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.10"
-content-hash = "99a58f1d6ded96075219e011e0f6e8e0adb085211542badca3e53747295d8fa9"
+python-versions = "^3.11"
+content-hash = "7c76872522a6a9aacbab75c7362ac3669c7a1521a4b0a39e69f2fbdc904742cf"
