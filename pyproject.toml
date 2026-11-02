@@ -6,7 +6,7 @@ authors = ["Bulat Kurbanov <kurbanovbul@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 celery = "^5.0.0"
 
 
